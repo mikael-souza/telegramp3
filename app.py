@@ -92,11 +92,11 @@ def index():
                 send_message_start(chat_id, "Please wait, we are converting your video to audio!")
                 try:
                     threading.Thread(target=process_url, args=(videoid_youtube[0], msg_id, chat_id,)).start()
-                    time.sleep(2)
+                    time.sleep(1)
+                    write_json(msg, 'telegram_request.json')
                 except Exception as e:
                     print(e)
                 # process_url(videoid_youtube[0], msg_id, chat_id)
-                write_json(msg, 'telegram_request.json')
 
             else:
                 send_message_reply(chat_id, msg_id, "Please, send a valid video url.")
