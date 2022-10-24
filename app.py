@@ -74,6 +74,7 @@ def index():
                     send_message(chat_id, """Welcome to MP3Youtube Bot, the bot can be used to download songs from your favorite YouTube videos, so enter the video URL, for example (www.youtube.com/watch?v=F1B9Fk_SgI0) and the bot will respond with the audio file.""")
 
             elif videoid_youtube:
+                send_message(chat_id, "Please wait, we are converting the video to audio!")
                 process_url(videoid_youtube[0], chat_id)
                 write_json(msg, 'telegram_request.json')
 
