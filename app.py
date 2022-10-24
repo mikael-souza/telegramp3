@@ -85,4 +85,4 @@ def index():
 
         return Response('ok', status=200)
     else:
-        return '<h4><title>It works</title>Its works</h4>'
+        return '<h2><title>It works</title>It works</h2>'
