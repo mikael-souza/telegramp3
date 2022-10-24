@@ -7,7 +7,6 @@ from flask.wrappers import Response
 import re
 import os
 import pafy
-import time
 import threading
 
 
@@ -36,7 +35,6 @@ def send_message_reply(chat_id, msg_id, text='bla-bla-bla'):
 
     print(r.text)
     return r
-
 
 def parse_message(message):
 
@@ -73,11 +71,10 @@ def process_url(youtube, msg_id, chat_id):
         url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&chat_id={chat_id}&reply_to_message_id={msg_id}&title={file_name}'
         r = requests.post(url, files={'audio': open(rf'./{file_name}.m4a', 'rb')})
         r.close()
-        #time.sleep(30)
+
     os.remove(rf'./{file_name}.m4a')
 
     return Response('ok', status=200)
-
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
