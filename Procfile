@@ -1,1 +1,1 @@
-web: gunicorn --bind "0.0.0.0:8443" wsgi:app
+web: python3 wsgi.py
