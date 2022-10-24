@@ -12,6 +12,7 @@ from random import randint
 import threading
 
 
+
 app = Flask(__name__)
 
 def write_json(data, filename='response.json'):
@@ -19,7 +20,7 @@ def write_json(data, filename='response.json'):
         json.dump(data, f, indent=4, ensure_ascii=False)
 
 def send_message_start(chat_id, text='bla-bla-bla'):
-
+    # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
     url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
     payload = {'chat_id': chat_id, 'text': text}
 
@@ -29,8 +30,8 @@ def send_message_start(chat_id, text='bla-bla-bla'):
     return r
 
 def send_message_reply(chat_id, msg_id, text='bla-bla-bla'):
-
-    url = f'https://api.telegram.org/{os.getenv("token_bot")}/sendMessage'
+    # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
+    url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
     payload = {'chat_id': chat_id, 'reply_to_message_id': msg_id, 'text': text}
 
     r = requests.post(url, json=payload)
@@ -59,15 +60,16 @@ def parse_message(message):
 
 def process_url(youtube, msg_id, chat_id):
 
-    file_name = randint(123456789, 987654321)
+    file_name = randint(123456789,987654321)
     video = pafy.new(youtube)
     print('title:', video.title)
 
     if video.title is not None:
         audiom4a = video.getbestaudio(preftype="m4a")
         audiom4a.download(quiet=True, filepath=rf"./{file_name}.m4a", meta=True)
-
+        # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&reply_to_message_id={msg_id}&title={audiom4a.title}'
         url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&chat_id={chat_id}&reply_to_message_id={msg_id}&title={audiom4a.title}'
+
         r = requests.post(url, files={'audio': open(rf'./{file_name}.m4a', 'rb')})
         r.close()
         #time.sleep(30)
@@ -84,28 +86,17 @@ def index():
 
         print('videoid:', videoid_youtube)
 
-        if videoid_youtube != type(int):
-
-            if not videoid_youtube:
-                send_message_reply(chat_id, msg_id, "Please, send a valid video url.")
-                
-                return Response('ok', status=200)
-
+        if videoid_youtube != type(int):        
             if "/start" in videoid_youtube:
                 send_message_start(chat_id, """Welcome to MP3Youtube Bot, the bot can be used to download songs from your favorite YouTube videos, so enter the video URL, for example (www.youtube.com/watch?v=F1B9Fk_SgI0) and the bot will respond with the audio file.""")
 
-                return Response('ok', status=200)
             elif videoid_youtube:
                 send_message_start(chat_id, "Please wait, we are converting your video to audio!")
                 try:
                     threading.Thread(target=process_url, args=(videoid_youtube[0], msg_id, chat_id,)).start()
-                    time.sleep(1)
                     write_json(msg, 'telegram_request.json')
-
-                    return Response('ok', status=200)
                 except Exception as e:
                     print(e)
-                # process_url(videoid_youtube[0], msg_id, chat_id)
 
             else:
                 send_message_reply(chat_id, msg_id, "Please, send a valid video url.")
