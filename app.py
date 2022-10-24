@@ -86,7 +86,7 @@ def index():
 
         if videoid_youtube != type(int):        
             if "/start" in videoid_youtube:
-                    send_message_start(chat_id, """Welcome to MP3Youtube Bot, the bot can be used to download songs from your favorite YouTube videos, so enter the video URL, for example (www.youtube.com/watch?v=F1B9Fk_SgI0) and the bot will respond with the audio file.""")
+                send_message_start(chat_id, """Welcome to MP3Youtube Bot, the bot can be used to download songs from your favorite YouTube videos, so enter the video URL, for example (www.youtube.com/watch?v=F1B9Fk_SgI0) and the bot will respond with the audio file.""")
 
             elif videoid_youtube:
                 send_message_start(chat_id, "Please wait, we are converting your video to audio!")
