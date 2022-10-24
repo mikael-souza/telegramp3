@@ -19,8 +19,8 @@ def write_json(data, filename='response.json'):
         json.dump(data, f, indent=4, ensure_ascii=False)
 
 def send_message_start(chat_id, text='bla-bla-bla'):
-    # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
-    url = f'https://api.telegram.org/bot520464277:AAEeUwJWImdIOUkezNiVjjLzD_xtn6xMFXk/sendMessage'
+
+    url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
     payload = {'chat_id': chat_id, 'text': text}
 
     r = requests.post(url, json=payload)
@@ -29,8 +29,8 @@ def send_message_start(chat_id, text='bla-bla-bla'):
     return r
 
 def send_message_reply(chat_id, msg_id, text='bla-bla-bla'):
-    # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
-    url = f'https://api.telegram.org/bot520464277:AAEeUwJWImdIOUkezNiVjjLzD_xtn6xMFXk/sendMessage'
+
+    url = f'https://api.telegram.org/{os.getenv("token_bot")}/sendMessage'
     payload = {'chat_id': chat_id, 'reply_to_message_id': msg_id, 'text': text}
 
     r = requests.post(url, json=payload)
@@ -59,16 +59,15 @@ def parse_message(message):
 
 def process_url(youtube, msg_id, chat_id):
 
-    file_name = randint(123456789,987654321)
+    file_name = randint(123456789, 987654321)
     video = pafy.new(youtube)
     print('title:', video.title)
 
     if video.title is not None:
         audiom4a = video.getbestaudio(preftype="m4a")
         audiom4a.download(quiet=True, filepath=rf"./{file_name}.m4a", meta=True)
-        # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&reply_to_message_id={msg_id}&title={audiom4a.title}'
-        url = f'https://api.telegram.org/bot520464277:AAEeUwJWImdIOUkezNiVjjLzD_xtn6xMFXk/sendAudio?&chat_id={chat_id}&reply_to_message_id={msg_id}&title={audiom4a.title}'
 
+        url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&chat_id={chat_id}&reply_to_message_id={msg_id}&title={audiom4a.title}'
         r = requests.post(url, files={'audio': open(rf'./{file_name}.m4a', 'rb')})
         r.close()
         #time.sleep(30)
