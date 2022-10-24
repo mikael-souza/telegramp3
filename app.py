@@ -8,9 +8,7 @@ import re
 import os
 import pafy
 import time
-from random import randint
 import threading
-
 
 
 app = Flask(__name__)
@@ -20,7 +18,7 @@ def write_json(data, filename='response.json'):
         json.dump(data, f, indent=4, ensure_ascii=False)
 
 def send_message_start(chat_id, text='bla-bla-bla'):
-    # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
+
     url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
     payload = {'chat_id': chat_id, 'text': text}
 
@@ -30,7 +28,7 @@ def send_message_start(chat_id, text='bla-bla-bla'):
     return r
 
 def send_message_reply(chat_id, msg_id, text='bla-bla-bla'):
-    # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
+
     url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendMessage'
     payload = {'chat_id': chat_id, 'reply_to_message_id': msg_id, 'text': text}
 
@@ -46,7 +44,7 @@ def parse_message(message):
     chat_id = message['message']['chat']['id'] if message.get('message') else message['edited_message']['chat']['id']
     txt = message['message']['text'] if message.get('message') else message['edited_message']['text']
 
-    print(chat_id, txt, msg_id)
+    print('chat_id:',chat_id, '\ntext:', txt, '\nmsg_id:', msg_id)
 
     pattern = r'''(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*?[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})'''
 
@@ -60,16 +58,19 @@ def parse_message(message):
 
 def process_url(youtube, msg_id, chat_id):
 
-    file_name = randint(123456789,987654321)
     video = pafy.new(youtube)
     print('title:', video.title)
 
+    file_name = video.title
+    special_characters = r'[(|)|(\\)|(/)|(:)|(*)|(>)|(<)|(")|(?)]'
+    file_name = re.sub(special_characters, '', file_name)
+
     if video.title is not None:
+        
         audiom4a = video.getbestaudio(preftype="m4a")
         audiom4a.download(quiet=True, filepath=rf"./{file_name}.m4a", meta=True)
-        # url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&reply_to_message_id={msg_id}&title={audiom4a.title}'
-        url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&chat_id={chat_id}&reply_to_message_id={msg_id}&title={audiom4a.title}'
 
+        url = f'https://api.telegram.org/bot{os.getenv("token_bot")}/sendAudio?&chat_id={chat_id}&reply_to_message_id={msg_id}&title={file_name}'
         r = requests.post(url, files={'audio': open(rf'./{file_name}.m4a', 'rb')})
         r.close()
         #time.sleep(30)
