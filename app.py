@@ -84,16 +84,25 @@ def index():
 
         print('videoid:', videoid_youtube)
 
-        if videoid_youtube != type(int):        
+        if videoid_youtube != type(int):
+
+            if not videoid_youtube:
+                send_message_reply(chat_id, msg_id, "Please, send a valid video url.")
+                
+                return Response('ok', status=200)
+
             if "/start" in videoid_youtube:
                 send_message_start(chat_id, """Welcome to MP3Youtube Bot, the bot can be used to download songs from your favorite YouTube videos, so enter the video URL, for example (www.youtube.com/watch?v=F1B9Fk_SgI0) and the bot will respond with the audio file.""")
 
+                return Response('ok', status=200)
             elif videoid_youtube:
                 send_message_start(chat_id, "Please wait, we are converting your video to audio!")
                 try:
                     threading.Thread(target=process_url, args=(videoid_youtube[0], msg_id, chat_id,)).start()
                     time.sleep(1)
                     write_json(msg, 'telegram_request.json')
+
+                    return Response('ok', status=200)
                 except Exception as e:
                     print(e)
                 # process_url(videoid_youtube[0], msg_id, chat_id)
